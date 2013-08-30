@@ -21,6 +21,7 @@
         </property>
     </bean>
 
+    <!--配置加载event组件-->
     <bean id="eventComponent" class="com.opensoft.common.event.core.EventComponent" factory-method="getInstance" init-method="start">
         <property name="executor" ref="threadPool"/>
         <property name="scanPackages">
@@ -44,5 +45,6 @@
         </property>
     </bean>
 
+    <!--配置加载缓存组件-->
     <bean id="cacheClient" class="${cache.cacheClient}" init-method="start" destroy-method="stop"/>
 </beans>

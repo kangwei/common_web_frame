@@ -42,6 +42,9 @@ public class CacheInterceptor {
     @Autowired
     CacheClient cacheClient;
 
+    /**
+     * 拦截点，Cache，CacheClear，CacheUpdate注解拦截
+     */
     @Pointcut("@annotation(com.opensoft.common.cache.annotation.Cache) " +
             "|| @annotation(com.opensoft.common.cache.annotation.CacheClear) " +
             "|| @annotation(com.opensoft.common.cache.annotation.CacheUpdate)")
@@ -107,6 +110,14 @@ public class CacheInterceptor {
         }
     }
 
+    /**
+     * 清除缓存
+     *
+     * @param cacheOperation   缓存操作，是否全部清除
+     * @param defaultCacheName 默认的CacheName
+     * @param defaultCacheKey  默认的CacheKey
+     * @param cacheClient      cache客户端
+     */
     private void evictCache(CacheOperation cacheOperation, String defaultCacheName, Object defaultCacheKey, CacheClient cacheClient) {
         if (cacheOperation.getAllClear()) {
             cacheClient.removeCache(defaultCacheName);
@@ -181,7 +192,7 @@ public class CacheInterceptor {
         String operationKey = operation.getKey();
         if (StringUtils.isNotEmpty(operationKey)) {
             EvaluationContext evaluationContext = evaluator.createEvaluationContext(method, params,
-                            target, targetClass, ExpressionEvaluator.NO_RESULT);
+                    target, targetClass, ExpressionEvaluator.NO_RESULT);
             return evaluator.key(operationKey, method, evaluationContext);
         }
         StringBuilder sb = new StringBuilder();

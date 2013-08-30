@@ -179,12 +179,12 @@ public class EventComponent implements com.opensoft.common.StartAble, Applicatio
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug("[CWF]-事件[{}]的OnEvent接收者处理结果：{}", eventName, invoke);
+                    log.debug("[CWF]-事件[{}]的OnEvent接收者处理返回：{}", eventName, invoke);
                 }
 
             } catch (Exception e) {
-                //TODO:统一事件异常处理机制
-                log.error(e.getMessage(), e);
+                //TODO:统一事件异常处理机制，目前仅记录日志
+                log.error("事件" + eventName + "执行出现异常：" + e.getMessage(), e);
             }
         } else {
             log.warn("[CWF]-事件[{}]没有指定接收者OnEvent，将不做任何处理", eventName);

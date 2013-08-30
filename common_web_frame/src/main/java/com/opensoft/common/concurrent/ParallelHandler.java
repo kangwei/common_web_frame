@@ -6,7 +6,6 @@
  */
 package com.opensoft.common.concurrent;
 
-import com.opensoft.common.pool.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * Description :
+ * Description : 并行计算辅助
  *
  * @author : KangWei
  */

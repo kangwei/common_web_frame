@@ -12,5 +12,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Send {
+
+    /**
+     * 多个事件，注意执行顺序为定义的顺序
+     */
     Event[] events();
 }

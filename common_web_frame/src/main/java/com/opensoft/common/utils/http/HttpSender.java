@@ -252,13 +252,13 @@ public class HttpSender {
         try {
             if (StringUtils.isNotEmpty(parameters)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("request parameters ：" + parameters);
+                    log.debug("请求参数：" + parameters);
                 }
                 writer.write(parameters);
             }
             if (request.getInputString() != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("post inputString:" + request.getInputString());
+                    log.debug("post到流的数据:" + request.getInputString());
                 }
                 writer.write(request.getInputString());
             }

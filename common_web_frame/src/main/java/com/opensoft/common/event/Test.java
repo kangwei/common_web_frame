@@ -36,12 +36,14 @@ public class Test {
 
     @OnEvent(eventName = "test")
     public void receiver(String s) {
+        s.substring(1, 111);
         System.out.println("onEvent :" + s);
     }
 
     @OnEvent(eventName = "test1")
     public String test1(String s) {
         System.out.println(s);
+        s.substring(1, 111);
         return s;
     }
 
