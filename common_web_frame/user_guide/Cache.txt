@@ -1,0 +1,12 @@
+缓存框架简介：缓存程序处理结果，一个类为一个缓存，方法+参数的hash值为缓存的key，与mybatis的二级缓存操作及原理一致，建议用于服务层的缓存，数据层的缓存可以用mybatis的缓存.
+一、使用配置：
+    1. spring集成配置，默认的缓存客户端为Ehcache，可更换：
+    <!--配置加载缓存组件-->
+    <bean id="cacheClient" class="${cache.cacheClient}" init-method="start" destroy-method="stop"/>
+
+    2.配置文件，默认配置文件在conf-default下的default.cwf.properties，项目可自行配置
+    cache.cacheClient=com.opensoft.common.cache.ehcache.EhCacheClientImpl
+
+二、使用注意事项
+    1.CURD，CUD会导致缓存刷新，所以正确的处理缓存刷新是使用缓存框架的核心，使用者务必注意
+    2.框架与Spring深度集成，不能脱离Spring框架独立运行

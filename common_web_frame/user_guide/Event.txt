@@ -1,0 +1,38 @@
+事件框架简介：类似于触发器，例如：用户登录触发增加积分操作，可用事件框架解决
+一、使用配置：
+    1. spring集成配置，默认加载事件组件，项目需配置扫描包路径，默认扫描包路径为框架内的包，可以更换事件组件的线程池，组件的executor属性为线程池：
+    <!--配置加载event组件-->
+    <bean id="eventComponent" class="com.opensoft.common.event.core.EventComponent" factory-method="getInstance" init-method="start">
+        <property name="executor" ref="threadPool"/>
+        <property name="scanPackages">
+            <value>${event.scanPackages}</value>
+        </property>
+    </bean>
+
+    <!-- 异步线程池，会加载配置文件的值 -->
+    <bean id="threadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 核心线程数  -->
+        <property name="corePoolSize" value="${event.corePoolSize}"/>
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="${event.maxPoolSize}"/>
+        <!-- 队列最大长度 >=mainExecutor.maxSize -->
+        <property name="queueCapacity" value="${event.queueCapacity}"/>
+        <!-- 线程池维护线程所允许的空闲时间 -->
+        <property name="keepAliveSeconds" value="${event.keepAliveSeconds}"/>
+        <!-- 线程池对拒绝任务(无线程可用)的处理策略 -->
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy"/>
+        </property>
+    </bean>
+
+    2.配置文件，默认配置文件在conf-default下的default.cwf.properties，项目可自行配置
+    event.corePoolSize=1
+    event.maxPoolSize=50
+    event.queueCapacity=1000
+    event.keepAliveSeconds=30
+    #扫描包路径
+    event.scanPackages=com.opensoft.common
+
+二、使用注意事项
+    1.事件为异步调用，不可用事件代替正常的程序处理过程，否则易造成事件的滥用，系统难以维护
+    2.事件框架与Spring深度集成，不能脱离Spring框架独立运行

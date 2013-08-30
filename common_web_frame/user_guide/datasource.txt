@@ -1,0 +1,47 @@
+一、配置文件
+#数据连接池类
+jdbc.datasource=com.mchange.v2.c3p0.ComboPooledDataSource
+#数据驱动类
+jdbc.driverClass=com.mysql.jdbc.Driver
+#初始连接池大小
+jdbc.initialPoolSize=20
+#最大连接池大小
+jdbc.maxPoolSize=100
+#数据库连接配置
+jdbc.url=jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF8&noAccessToProcedureBodies=true
+jdbc.username=root
+jdbc.password=root
+mybatis.dbtype=mysql
+#Mapper文件地址
+mybaties.mapperLocation=classpath*:sqlMap/**/*.xml
+#事务切面
+transactionPointcut= within(..service..* )
+1. druid配置
+jdbc.datasource=com.alibaba.druid.pool.DruidDataSource
+    <property name="filters" value="stat"/>
+    <property name="maxActive" value="20"/>
+    <property name="initialSize" value="1"/>
+    <property name="maxWait" value="60000"/>
+    <property name="minIdle" value="1"/>
+    <property name="timeBetweenEvictionRunsMillis" value="3000"/>
+    <property name="minEvictableIdleTimeMillis" value="300000"/>
+    <property name="validationQuery" value="SELECT 'x'"/>
+    <property name="testWhileIdle" value="true"/>
+    <property name="testOnBorrow" value="false"/>
+    <property name="testOnReturn" value="false"/>
+    <property name="poolPreparedStatements" value="true"/>
+    <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+管理平台配置，在web.xml中配置servlet：
+    <servlet>
+        <servlet-name>DruidStatView</servlet-name>
+        <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DruidStatView</servlet-name>
+        <url-pattern>/druid/*</url-pattern>
+    </servlet-mapping>
+2. c3p0配置
+jdbc.datasource=com.mchange.v2.c3p0.ComboPooledDataSource
+
+3.注意事项
+分页查询用的分页组件，查询的Mapper对应的ID必须包含"_page"字符串
