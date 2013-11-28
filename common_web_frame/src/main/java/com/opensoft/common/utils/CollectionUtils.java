@@ -2,6 +2,7 @@ package com.opensoft.common.utils;
 
 import org.apache.commons.collections.Predicate;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -184,12 +185,16 @@ public class CollectionUtils extends org.apache.commons.collections.CollectionUt
      * @param <T>  泛型
      * @return clone集合
      */
-    public static <T> List<T> cloneList(List<T> list) {
-        List<T> newList = new ArrayList<T>();
-        for (T t : list) {
-            newList.add(t);
-        }
+    public static <T> List<T> cloneList(List<T> list) throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(byteOut);
+        out.writeObject(list);
 
-        return newList;
+        ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+        ObjectInputStream in = new ObjectInputStream(byteIn);
+        @SuppressWarnings("unchecked")
+        List<T> dest = (List<T>) in.readObject();
+
+        return dest;
     }
 }

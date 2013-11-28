@@ -16,7 +16,7 @@ import java.net.URL;
  * @Date 11-2-23
  */
 public class ImageUtils {
-	
+
     /**
      * 读取远程图片
      *
@@ -140,49 +140,55 @@ public class ImageUtils {
         source.drawString(str, x, y);
         return source;
     }
-	/**
-	 * 图片等比缩放,先要设置宽和高
-	 * @param image
-	 * @return
-	 * @throws java.io.IOException
-	 */
-	public static BufferedImage compressPic(InputStream image,int outputWidth,int outputHeight) throws IOException{
-		Image img = ImageIO.read(image);
-		if(img.getWidth(null) == -1){
-			return null;
-		}
-		int newWidth; int newHeight;
-		// 为等比缩放计算输出的图片宽度及高度
-		double rate1 = ((double) img.getWidth(null)) / (double) outputWidth;
+
+    /**
+     * 图片等比缩放,先要设置宽和高
+     *
+     * @param image
+     * @return
+     * @throws java.io.IOException
+     */
+    public static BufferedImage compressPic(InputStream image, int outputWidth, int outputHeight) throws IOException {
+        Image img = ImageIO.read(image);
+        if (img.getWidth(null) == -1) {
+            return null;
+        }
+        int newWidth;
+        int newHeight;
+        // 为等比缩放计算输出的图片宽度及高度
+        double rate1 = ((double) img.getWidth(null)) / (double) outputWidth;
         double rate2 = ((double) img.getHeight(null)) / (double) outputHeight;
         // 根据缩放比率大的进行缩放控制
         double rate = rate1 > rate2 ? rate1 : rate2;
         newWidth = (int) (((double) img.getWidth(null)) / rate);
         newHeight = (int) (((double) img.getHeight(null)) / rate);
         BufferedImage tag = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-        System.out.println("rate====" + rate);
-        System.out.println("Width====" + img.getWidth(null) + "Height====" + img.getHeight(null));
-        System.out.println("newWidth====" + newWidth + "newHeight====" + newHeight);
         /*
          * Image.SCALE_SMOOTH 的缩略算法 生成缩略图片的平滑度的
          * 优先级比速度高 生成的图片质量比较好 但速度慢
          */
-        tag.getGraphics().drawImage(img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH), 0, 0, null);
-		return tag;
-	}
-	/**
-	 * 图片等比缩放,先要设置宽和高
-	 * @param image
-	 * @return
-	 * @throws java.io.IOException
-	 */
-	public static BufferedImage compressPic(BufferedImage image,int outputWidth,int outputHeight) throws IOException{
-		if(image == null){
-			return null;
-		}
-		int newWidth; int newHeight;
-		// 为等比缩放计算输出的图片宽度及高度
-		double rate1 = ((double) image.getWidth(null)) / (double) outputWidth;
+        Graphics2D g = tag.createGraphics();
+        g.setBackground(Color.WHITE);
+        g.clearRect(0, 0, outputWidth, outputHeight);
+        g.drawImage(img.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT), 0, 0, null);
+        return tag;
+    }
+
+    /**
+     * 图片等比缩放,先要设置宽和高
+     *
+     * @param image
+     * @return
+     * @throws java.io.IOException
+     */
+    public static BufferedImage compressPic(BufferedImage image, int outputWidth, int outputHeight) throws IOException {
+        if (image == null) {
+            return null;
+        }
+        int newWidth;
+        int newHeight;
+        // 为等比缩放计算输出的图片宽度及高度
+        double rate1 = ((double) image.getWidth(null)) / (double) outputWidth;
         double rate2 = ((double) image.getHeight(null)) / (double) outputHeight;
         // 根据缩放比率大的进行缩放控制
         double rate = rate1 > rate2 ? rate1 : rate2;
@@ -194,26 +200,27 @@ public class ImageUtils {
          * 优先级比速度高 生成的图片质量比较好 但速度慢
          */
         tag.getGraphics().drawImage(image.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT), 0, 0, null);
-		return tag;
-	}
-	/**
-	 * 返回图片缩放比例
-	 * @param image
-	 * @return
-	 * @throws java.io.IOException
-	 */
-	public static double getRate(InputStream image,int outputWidth,int outputHeight) throws IOException{
-		Image img = ImageIO.read(image);
-		if(img.getWidth(null) == -1){
-			return 0;
-		}
-		// 为等比缩放计算输出的图片宽度及高度  
-		double rate1 = ((double) img.getWidth(null)) / (double) outputWidth;   
+        return tag;
+    }
+
+    /**
+     * 返回图片缩放比例
+     *
+     * @param image
+     * @return
+     * @throws java.io.IOException
+     */
+    public static double getRate(InputStream image, int outputWidth, int outputHeight) throws IOException {
+        Image img = ImageIO.read(image);
+        if (img.getWidth(null) == -1) {
+            return 0;
+        }
+        // 为等比缩放计算输出的图片宽度及高度
+        double rate1 = ((double) img.getWidth(null)) / (double) outputWidth;
         double rate2 = ((double) img.getHeight(null)) / (double) outputHeight;
         // 根据缩放比率大的进行缩放控制   
         return rate1 > rate2 ? rate1 : rate2;
-	}
-	
-    
+    }
+
 
 }

@@ -74,13 +74,12 @@ public class CacheUtils {
             cacheName = CACHE_DEFAULT_EXPIRE;
         }
 
-        CacheManager cacheManager1 = getCacheManager();
-        Cache cache = cacheManager1.getCache(cacheName);
+        Cache cache = getCacheManager().getCache(cacheName);
         //判断缓存是否已创建
         if (cache == null || !cache.getStatus().equals(Status.STATUS_ALIVE)) {
             //以默认配置创建缓存
             cache = new Cache(getCacheConfiguration(cacheName));
-            cacheManager1.addCacheIfAbsent(cache);
+            getCacheManager().addCacheIfAbsent(cache);
 
             if (log.isDebugEnabled()) {
                 log.debug("创建名为{}的cache, cache配置：{}", cacheName, cache.toString());
@@ -130,7 +129,12 @@ public class CacheUtils {
      * @return 缓存的值
      */
     public static <T> T getCacheElement(String cacheName, Object elementKey) {
-        Cache cache = createCache(cacheName);
+        Cache cache = getCache(cacheName);
+
+        if (cache == null) {
+            return null;
+        }
+
         if (isCacheAlive(cache)) {
             Element element = cache.get(elementKey);
             if (element != null) {
@@ -178,7 +182,12 @@ public class CacheUtils {
      * @return 缓存的值
      */
     public static <T> T getCacheElement(String cacheName, Object elementKey, Callable call, long timeToIdleSeconds, long timeTtoLiveSeconds) {
-        Cache cache = createCache(cacheName);
+        Cache cache = getCache(cacheName);
+
+        if (cache == null) {
+            return null;
+        }
+
         if (isCacheAlive(cache)) {
             cache.getCacheConfiguration().setTimeToIdleSeconds(timeToIdleSeconds);
             cache.getCacheConfiguration().setTimeToLiveSeconds(timeTtoLiveSeconds);
@@ -310,16 +319,21 @@ public class CacheUtils {
     }
 
     public static Object removeFromCache(String cacheName, Object elementKey) {
-        if (log.isDebugEnabled()) {
-            log.debug("移除名为{}的缓存中元素{}", cacheName, elementKey);
-        }
         Object objectValue = null;
-        Cache cache = createCache(cacheName);
+        Cache cache = getCache(cacheName);
+
+        if (cache == null) {
+            return null;
+        }
+
         if (isCacheAlive(cache)) {
             Element element = cache.get(elementKey);
             if (element != null) {
                 objectValue = element.getObjectValue();
                 cache.remove(elementKey);
+                if (log.isDebugEnabled()) {
+                    log.debug("移除名为：{}的缓存中缓存键：{}的值", cacheName, elementKey);
+                }
             }
         }
 

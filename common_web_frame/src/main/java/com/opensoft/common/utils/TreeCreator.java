@@ -48,11 +48,11 @@ public class TreeCreator {
         }
 
         try {
-            Field keyField = parentNode.getClass().getDeclaredField(keyFieldName);
+            Field keyField = ReflectionUtils.getField(parentNode.getClass(), keyFieldName);
             validatePrimitiveField(keyFieldName, keyField);
-            Field pKeyField = parentNode.getClass().getDeclaredField(parentKeyFieldName);
+            Field pKeyField = ReflectionUtils.getField(parentNode.getClass(), parentKeyFieldName);
             validatePrimitiveField(parentKeyFieldName, pKeyField);
-            Field childrenField = parentNode.getClass().getDeclaredField(childrenFieldName);
+            Field childrenField = ReflectionUtils.getField(parentNode.getClass(), childrenFieldName);
             if (!List.class.isAssignableFrom(childrenField.getType())) {
                 throw new AppException(childrenFieldName + "参数不符合期望，期望List");
             }
@@ -77,14 +77,14 @@ public class TreeCreator {
      */
     private static <T> T createTreeInner(List<T> ds, T t, String keyFieldName, String parentKeyFieldName, String childrenFieldName) throws AppException {
         try {
-            Field childrenField = t.getClass().getDeclaredField(childrenFieldName);
+            Field childrenField = ReflectionUtils.getField(t.getClass(), childrenFieldName);
             childrenField.setAccessible(true);
             List<T> children = (List<T>) childrenField.get(t);
             if (children == null) {
                 children = new ArrayList<T>();
                 BeanUtils.setProperty(t, childrenFieldName, children);
                 if (log.isDebugEnabled()) {
-                    log.debug("{}节点的孩子接口为空，将初始化...", BeanUtils.getSimpleProperty(t, keyFieldName));
+                    log.debug("{}节点的孩子节点为空，将初始化...", BeanUtils.getSimpleProperty(t, keyFieldName));
                 }
             }
 

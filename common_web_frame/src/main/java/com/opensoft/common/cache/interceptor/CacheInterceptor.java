@@ -69,7 +69,7 @@ public class CacheInterceptor {
             log.debug("[CWF]-Cache操作{}", cacheOperation.toString());
         }
         String defaultCacheName = generateCacheName(pjp.getTarget().getClass());
-        Object defaultCacheKey = generateKey(target, targetClass, method, cacheOperation, args);
+        String  defaultCacheKey = generateKey(target, targetClass, method, cacheOperation, args);
 
         if (CacheOperation.CACHE == cacheOperation.getOperation()) {
             Object proceed;
@@ -188,12 +188,12 @@ public class CacheInterceptor {
         return null;
     }
 
-    public Object generateKey(Object target, Class<?> targetClass, Method method, CacheOperation operation, Object[] params) throws IOException {
+    public String generateKey(Object target, Class<?> targetClass, Method method, CacheOperation operation, Object[] params) throws IOException {
         String operationKey = operation.getKey();
         if (StringUtils.isNotEmpty(operationKey)) {
             EvaluationContext evaluationContext = evaluator.createEvaluationContext(method, params,
                     target, targetClass, ExpressionEvaluator.NO_RESULT);
-            return evaluator.key(operationKey, method, evaluationContext);
+            return String.valueOf(evaluator.key(operationKey, method, evaluationContext));
         }
         StringBuilder sb = new StringBuilder();
         for (Object param : params) {
