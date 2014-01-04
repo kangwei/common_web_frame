@@ -1,5 +1,8 @@
 package com.opensoft.common.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -16,6 +19,7 @@ import java.net.URL;
  * @Date 11-2-23
  */
 public class ImageUtils {
+    private static final Logger log = LoggerFactory.getLogger(ImageUtils.class);
 
     /**
      * 读取远程图片
@@ -156,13 +160,20 @@ public class ImageUtils {
         int newWidth;
         int newHeight;
         // 为等比缩放计算输出的图片宽度及高度
-        double rate1 = ((double) img.getWidth(null)) / (double) outputWidth;
-        double rate2 = ((double) img.getHeight(null)) / (double) outputHeight;
+        double width = (double) img.getWidth(null);
+        double rate1 = width / (double) outputWidth;
+        double height = (double) img.getHeight(null);
+        double rate2 = height / (double) outputHeight;
         // 根据缩放比率大的进行缩放控制
         double rate = rate1 > rate2 ? rate1 : rate2;
-        newWidth = (int) (((double) img.getWidth(null)) / rate);
-        newHeight = (int) (((double) img.getHeight(null)) / rate);
+        newWidth = (int) (width / rate);
+        newHeight = (int) (height / rate);
         BufferedImage tag = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        if (log.isDebugEnabled()) {
+            log.debug("原图片大小：{}*{}，压缩后大小：{}*{}", new Object[]{
+                    width, height, newWidth, newHeight
+            });
+        }
         /*
          * Image.SCALE_SMOOTH 的缩略算法 生成缩略图片的平滑度的
          * 优先级比速度高 生成的图片质量比较好 但速度慢

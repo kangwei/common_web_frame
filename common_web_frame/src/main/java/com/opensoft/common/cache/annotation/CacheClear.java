@@ -13,9 +13,9 @@ import java.lang.annotation.*;
 @Documented
 public @interface CacheClear {
     /**
-     * 相关联的缓存类，可以指定多个管理类，每个类就是一个cache
+     * cacheName
      */
-    Class<?>[] relatedCacheClass() default {};
+    String cacheName() default "";
 
     /**
      * 缓存的键值，支持spel表达式

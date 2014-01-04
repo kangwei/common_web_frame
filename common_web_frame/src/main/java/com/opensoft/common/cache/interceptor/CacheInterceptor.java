@@ -12,7 +12,6 @@ import com.opensoft.common.cache.annotation.CacheClear;
 import com.opensoft.common.cache.annotation.CacheUpdate;
 import com.opensoft.common.exception.AppRuntimeException;
 import com.opensoft.common.spel.ExpressionEvaluator;
-import com.opensoft.common.utils.CollectionUtils;
 import com.opensoft.common.utils.DigestUtils;
 import com.opensoft.common.utils.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -68,7 +67,10 @@ public class CacheInterceptor {
         if (log.isDebugEnabled()) {
             log.debug("[CWF]-Cache操作{}", cacheOperation.toString());
         }
-        String defaultCacheName = generateCacheName(pjp.getTarget().getClass());
+        String defaultCacheName = cacheOperation.getCacheName();
+        if (StringUtils.isEmpty(defaultCacheName)) {
+            defaultCacheName = generateCacheName(pjp.getTarget().getClass());
+        }
         String  defaultCacheKey = generateKey(target, targetClass, method, cacheOperation, args);
 
         if (CacheOperation.CACHE == cacheOperation.getOperation()) {
@@ -97,12 +99,6 @@ public class CacheInterceptor {
             Object proceed = process(pjp);
             if (evaluator.isConditionPassing(target, targetClass, method, args, cacheOperation.getCondition())) {
                 evictCache(cacheOperation, defaultCacheName, defaultCacheKey, cacheClient);
-                if (CollectionUtils.isNotEmpty(cacheOperation.getRelatedClasses())) {
-                    for (Class<?> aClass : cacheOperation.getRelatedClasses()) {
-                        String relatedCacheName = generateCacheName(aClass);
-                        evictCache(cacheOperation, relatedCacheName, defaultCacheKey, cacheClient);
-                    }
-                }
             }
             return proceed;
         } else {
@@ -128,12 +124,6 @@ public class CacheInterceptor {
 
     private void handleRelatedCache(CacheOperation cacheOperation, String defaultCacheName, Object defaultCacheKey, CacheClient cacheClient, Object cacheValue) throws IOException {
         cacheClient.putIntoCache(defaultCacheName, defaultCacheKey, cacheValue, cacheOperation.getTtl(), cacheOperation.getTti());
-        if (CollectionUtils.isNotEmpty(cacheOperation.getRelatedClasses())) {
-            for (Class<?> aClass : cacheOperation.getRelatedClasses()) {
-                String relatedCacheName = generateCacheName(aClass);
-                cacheClient.putIntoCache(relatedCacheName, defaultCacheKey, cacheValue, cacheOperation.getTtl(), cacheOperation.getTti());
-            }
-        }
     }
 
     private Object process(ProceedingJoinPoint pjp) {
@@ -150,7 +140,7 @@ public class CacheInterceptor {
         CacheOperation cacheOperation = new CacheOperation();
         if (method.isAnnotationPresent(Cache.class)) {
             Cache cache = method.getAnnotation(Cache.class);
-            cacheOperation.setRelatedClasses(cache.relatedCacheClass());
+            cacheOperation.setCacheName(cache.cacheName());
             cacheOperation.setKey(cache.key());
             cacheOperation.setCondition(cache.condition());
             cacheOperation.setOperation(CacheOperation.CACHE);
@@ -158,14 +148,14 @@ public class CacheInterceptor {
             cacheOperation.setTti(cache.timeToIdle());
         } else if (method.isAnnotationPresent(CacheClear.class)) {
             CacheClear cacheClear = method.getAnnotation(CacheClear.class);
-            cacheOperation.setRelatedClasses(cacheClear.relatedCacheClass());
+            cacheOperation.setCacheName(cacheClear.cacheName());
             cacheOperation.setKey(cacheClear.key());
             cacheOperation.setCondition(cacheClear.condition());
             cacheOperation.setAllClear(cacheClear.allClear());
             cacheOperation.setOperation(CacheOperation.EVICT);
         } else if (method.isAnnotationPresent(CacheUpdate.class)) {
             CacheUpdate cacheUpdate = method.getAnnotation(CacheUpdate.class);
-            cacheOperation.setRelatedClasses(cacheUpdate.relatedCacheClass());
+            cacheOperation.setCacheName(cacheUpdate.cacheName());
             cacheOperation.setKey(cacheUpdate.key());
             cacheOperation.setCondition(cacheUpdate.condition());
             cacheOperation.setOperation(CacheOperation.PUT);

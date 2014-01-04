@@ -106,8 +106,25 @@ public class FileUpload {
         if (CollectionUtils.isNotEmpty(items)) {
             for (FileItem item : items) {
                 if (!item.isFormField() && StringUtils.isNotEmpty(item.getName())) {
+                    continue;
+                } else {
+                    result.put(item.getFieldName(), item.getString("UTF-8"));
+                }
+            }
+
+            for (FileItem item : items) {
+                if (!item.isFormField() && StringUtils.isNotEmpty(item.getName())) {
                     if (log.isDebugEnabled()) {
                         log.debug("上传文件名：{}，大小：{}，类型：{}", new Object[]{item.getName(), item.getSize(), item.getContentType()});
+                    }
+
+                    try {
+                        int w = Integer.parseInt((String)result.get("w"));
+                        int h = Integer.parseInt((String)result.get("h"));
+                        width = w;
+                        height = h;
+                    } catch (NumberFormatException e) {
+                        //do nothing
                     }
 
                     String fileName;
@@ -118,12 +135,10 @@ public class FileUpload {
                     }
                     File uploadFile = new File(realPath + File.separator + fileName);
                     BufferedImage bufferedImage = ImageUtils.compressPic(item.getInputStream(), width, height);
-//                    item.write(uploadFile);
+                    //                    item.write(uploadFile);
                     ImageUtils.write(bufferedImage, StringUtils.substringAfterLast(fileName, "."), new FileOutputStream(uploadFile));
                     uploadFileName = uploadPath + "/" + uploadFile.getName();
                     result.put(item.getFieldName(), uploadFileName);
-                } else {
-                    result.put(item.getFieldName(), item.getString("UTF-8"));
                 }
             }
         }

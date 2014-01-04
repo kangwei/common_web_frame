@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Description : 组件管理器
  * User : 康维
  */
+@Deprecated
 public class ComponentManager {
     private static final Logger log = LoggerFactory.getLogger(ComponentManager.class);
     public static final String EVENT = "event";

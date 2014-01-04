@@ -18,6 +18,7 @@ import java.util.concurrent.Future;
  *
  * @author : KangWei
  */
+@Deprecated
 public class ParallelHandler {
     private static final Logger log = LoggerFactory.getLogger(ParallelHandler.class);
 

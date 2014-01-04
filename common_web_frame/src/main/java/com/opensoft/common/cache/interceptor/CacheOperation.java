@@ -8,11 +8,6 @@ package com.opensoft.common.cache.interceptor;
 
 import org.springframework.util.Assert;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 /**
  * Description :
  *
@@ -23,7 +18,7 @@ class CacheOperation {
     public static final int PUT = 2;
     public static final int EVICT = 3;
 
-    private Set<Class<?>> relatedClasses = Collections.emptySet();
+    private String cacheName = "";
     private String condition = "";
     private String key = "";
     private Boolean allClear = false;
@@ -47,23 +42,12 @@ class CacheOperation {
         this.tti = tti;
     }
 
-    public Set<Class<?>> getRelatedClasses() {
-        return relatedClasses;
-    }
-
     public String getCondition() {
         return condition;
     }
 
     public String getKey() {
         return key;
-    }
-
-    public void setRelatedClasses(Class<?>[] cacheClasses) {
-        if (cacheClasses != null) {
-            this.relatedClasses = new LinkedHashSet<Class<?>>(cacheClasses.length);
-            Collections.addAll(this.relatedClasses, cacheClasses);
-        }
     }
 
     public void setCondition(String condition) {
@@ -90,6 +74,14 @@ class CacheOperation {
 
     public void setOperation(Integer operation) {
         this.operation = operation;
+    }
+
+    String getCacheName() {
+        return cacheName;
+    }
+
+    void setCacheName(String cacheName) {
+        this.cacheName = cacheName;
     }
 
     /**
@@ -130,8 +122,8 @@ class CacheOperation {
     protected StringBuilder getOperationDescription() {
         StringBuilder result = new StringBuilder();
         result.append(getClass().getSimpleName());
-        result.append("[relatedClasses=");
-        result.append(Arrays.toString(relatedClasses.toArray()));
+        result.append("[cacheName=");
+        result.append(this.cacheName);
         result.append(" | key='");
         result.append(this.key);
         result.append("' | condition='");

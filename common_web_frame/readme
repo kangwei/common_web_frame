@@ -1,0 +1,8 @@
+release note：
+2.0：
+ a、事件和缓存模式修改，增加对spel语言的支持
+ b、增加POI操作的util
+ c、将数据库的配置纳入版本，增加阿里的druid数据源支持
+
+2.1：
+ a、缓存补全memcache和redis
