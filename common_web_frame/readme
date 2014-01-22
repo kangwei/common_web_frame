@@ -6,3 +6,4 @@ release note：
 
 2.1：
  a、缓存补全memcache和redis
+ b、缓存有多个副本模式改为单一副本模式，不再支持多个cache缓存同一对象

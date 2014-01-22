@@ -1,9 +1,6 @@
 package com.opensoft.common.event.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Description :  事件的接收者，接收指定的事件进行处理
@@ -11,6 +8,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Inherited
+@Documented
 public @interface OnEvent {
     /**
      * 事件名

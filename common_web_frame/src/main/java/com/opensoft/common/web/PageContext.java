@@ -6,7 +6,6 @@
  */
 package com.opensoft.common.web;
 
-import com.opensoft.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +94,7 @@ public class PageContext {
      * @return 参数值。如果参数不存在则返回空字符串
      */
     public static String getParameter(String name) {
-        return com.opensoft.common.utils.StringUtils.defaultIfEmpty(getRequest().getParameter(name), "");
+        return getParameter(name, null);
     }
 
     /**

@@ -9,45 +9,25 @@
             >
         <property
                 name="maxActive"
-                value="${redis.pool.maxActive}"/>
+                value="${cache.redis.pool.maxActive}"/>
         <property
                 name="maxIdle"
-                value="${redis.pool.maxIdle}"/>
+                value="${cache.redis.pool.maxIdle}"/>
         <property
                 name="maxWait"
-                value="${redis.pool.maxWait}"/>
+                value="${cache.redis.pool.maxWait}"/>
         <property
                 name="testOnBorrow"
-                value="${redis.pool.testOnBorrow}"/>
+                value="${cache.redis.pool.testOnBorrow}"/>
     </bean>
     <bean
-            id="shardedJedisPool"
-            class="redis.clients.jedis.ShardedJedisPool"
+            id="shardedJedisPoolFactory"
+            class="com.opensoft.common.cache.redis.ShardedJedisPoolFactory"
             >
-        <constructor-arg
-                index="0"
-                ref="jedisPoolConfig"/>
-        <constructor-arg index="1">
-            <list>
-                <bean class="redis.clients.jedis.JedisShardInfo">
-                    <constructor-arg
-                            index="0"
-                            value="${redis1.ip}"/>
-                    <constructor-arg
-                            index="1"
-                            value="${redis.port}"
-                            type="int"/>
-                </bean>
-                <bean class="redis.clients.jedis.JedisShardInfo">
-                    <constructor-arg
-                            index="0"
-                            value="${redis2.ip}"/>
-                    <constructor-arg
-                            index="1"
-                            value="${redis.port}"
-                            type="int"/>
-                </bean>
-            </list>
-        </constructor-arg>
+        <property name="config" ref="jedisPoolConfig"/>
+        <property name="servers" value="${cache.redis.servers}"/>
+    </bean>
+    <bean id="redisCacheClient" class="com.opensoft.common.cache.redis.RedisCacheClientImpl">
+        <property name="factory" ref="shardedJedisPoolFactory"/>
     </bean>
 </beans>
