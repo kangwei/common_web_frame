@@ -6,6 +6,7 @@
  */
 package com.opensoft.common.cache.ehcache;
 
+import com.opensoft.common.cache.AbstractCacheClient;
 import com.opensoft.common.cache.CacheClient;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * Description : ehcacheClient的实现
  * User : 康维
  */
-public class EhCacheClientImpl implements CacheClient {
+public class EhCacheClientImpl extends AbstractCacheClient {
     private static final Logger log = LoggerFactory.getLogger(EhCacheClientImpl.class);
 
     private CacheManager cacheManager;
@@ -152,9 +153,9 @@ public class EhCacheClientImpl implements CacheClient {
      * @see CacheClient#removeElement(String, Object)
      */
     @Override
-    public Object removeElement(String cacheName, Object elementKey) {
+    public <T> T removeElement(String cacheName, Object elementKey) {
 //        return CacheUtils.removeFromCache(cacheName, elementKey);
-        Object objectValue = null;
+        T objectValue = null;
         Cache cache = getCache(cacheName);
 
         if (cache == null) {
@@ -164,7 +165,7 @@ public class EhCacheClientImpl implements CacheClient {
         if (isCacheAlive(cache)) {
             Element element = cache.get(elementKey);
             if (element != null) {
-                objectValue = element.getObjectValue();
+                objectValue = (T) element.getObjectValue();
                 cache.remove(elementKey);
                 if (log.isDebugEnabled()) {
                     log.debug("移除名为：{}的缓存中缓存键：{}的值", cacheName, elementKey);
@@ -214,5 +215,7 @@ public class EhCacheClientImpl implements CacheClient {
         } else {
             log.warn("cacheManager为空");
         }
+
+        super.stop();
     }
 }

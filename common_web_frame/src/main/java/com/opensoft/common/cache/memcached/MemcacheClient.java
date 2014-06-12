@@ -6,7 +6,7 @@
  */
 package com.opensoft.common.cache.memcached;
 
-import com.opensoft.common.cache.CacheClient;
+import com.opensoft.common.cache.AbstractCacheClient;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientCallable;
 import net.rubyeye.xmemcached.exception.MemcachedException;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author : KangWei
  */
-public class MemcacheClient implements CacheClient {
+public class MemcacheClient extends AbstractCacheClient {
     private static final Logger log = LoggerFactory.getLogger(MemcacheClient.class);
 
     private MemcachedClient memcachedClient;
@@ -84,9 +84,9 @@ public class MemcacheClient implements CacheClient {
     }
 
     @Override
-    public Object removeElement(String cacheName, final Object elementKey) {
+    public <T> T removeElement(String cacheName, final Object elementKey) {
         try {
-            return memcachedClient.withNamespace(cacheName, new MemcachedClientCallable<Boolean>() {
+            return (T) memcachedClient.withNamespace(cacheName, new MemcachedClientCallable<Boolean>() {
                 @Override
                 public Boolean call(MemcachedClient client) throws MemcachedException, InterruptedException, TimeoutException {
                     return client.delete(String.valueOf(elementKey));
@@ -96,7 +96,7 @@ public class MemcacheClient implements CacheClient {
             log.error("remove cache key={} invoke error ", e);
         }
 
-        return false;
+        return null;
     }
 
     @Override
@@ -120,5 +120,7 @@ public class MemcacheClient implements CacheClient {
         } catch (Exception e) {
             log.error("stop memcache invoke error ", e);
         }
+
+        super.stop();
     }
 }

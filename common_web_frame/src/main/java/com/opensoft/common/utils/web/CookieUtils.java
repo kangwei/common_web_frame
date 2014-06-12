@@ -95,8 +95,12 @@ public class CookieUtils {
      * @param key      key
      */
     public static void removeCookieValue(HttpServletResponse response, String key) {
+        removeCookieValue(response, "/", key);
+    }
+
+    public static void removeCookieValue(HttpServletResponse response, String domain, String key) {
         Cookie cookie = new Cookie(key, null);
-        cookie.setPath("/");
+        cookie.setPath(domain);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }

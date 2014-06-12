@@ -1,7 +1,7 @@
 package com.opensoft.common.cache;
 
 
-import com.opensoft.common.StartAble;
+import java.util.concurrent.Callable;
 
 /**
  * Description : cache的client
@@ -38,12 +38,16 @@ public interface CacheClient extends com.opensoft.common.StartAble {
      */
     public <T> T getFromCache(String cacheName, Object elementKey);
 
+    public <T> T lazyLoadFromCache(String cacheName, Object elementKey, Callable<T> loadSource);
+
+    public <T> T asynLazyLoadFromCache(String cacheName, Object elementKey, Callable<T> loadSource);
+
     /**
      * @param cacheName
      * @param elementKey
      * @return
      */
-    public Object removeElement(String cacheName, Object elementKey);
+    public <T> T removeElement(String cacheName, Object elementKey);
 
     /**
      * @param cacheName

@@ -6,7 +6,7 @@
  */
 package com.opensoft.common.cache.redis;
 
-import com.opensoft.common.cache.CacheClient;
+import com.opensoft.common.cache.AbstractCacheClient;
 import com.opensoft.common.utils.SerializeUtil;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ShardedJedis;
@@ -20,7 +20,7 @@ import java.util.Set;
  *
  * @author : KangWei
  */
-public class RedisCacheClientImpl implements CacheClient {
+public class RedisCacheClientImpl extends AbstractCacheClient {
     private ShardedJedisPool shardedJedisPool;
 
     private ShardedJedisPoolFactory factory;
@@ -70,13 +70,13 @@ public class RedisCacheClientImpl implements CacheClient {
     }
 
     @Override
-    public Object removeElement(String cacheName, Object elementKey) {
+    public <T> T removeElement(String cacheName, Object elementKey) {
         Collection<Jedis> allShards = getShardedJedis().getAllShards();
         for (Jedis jedis : allShards) {
             jedis.del(SerializeUtil.serialize(cacheName + elementKey));
         }
 
-        return true;
+        return null;
     }
 
     @Override
@@ -99,5 +99,6 @@ public class RedisCacheClientImpl implements CacheClient {
     @Override
     public void stop() {
         getShardedJedis().disconnect();
+        super.stop();
     }
 }
