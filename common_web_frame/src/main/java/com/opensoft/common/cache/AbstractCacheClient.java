@@ -6,11 +6,10 @@
  */
 package com.opensoft.common.cache;
 
-import com.opensoft.common.pool.DaemonThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 
 /**
  * Description : 所有CacheClient的抽象实现，主要提供延迟加载和异步延迟加载的统一实现
@@ -20,8 +19,7 @@ import java.util.concurrent.*;
 public class AbstractCacheClient implements CacheClient {
     private static final Logger log = LoggerFactory.getLogger(AbstractCacheClient.class);
 
-    //异步延迟加载的线程池
-    private ExecutorService executorService = new ThreadPoolExecutor(1, 10, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1000), DaemonThreadFactory.getInstance());
+
 
     @Override
     public void putIntoCache(String cacheName, Object elementKey, Object elementValue) {
@@ -38,6 +36,14 @@ public class AbstractCacheClient implements CacheClient {
         return null;
     }
 
+    /**
+     * @see com.opensoft.common.cache.CacheClient#lazyLoadFromCache(String, Object, java.util.concurrent.Callable)
+     * @param cacheName  缓存名
+     * @param elementKey key
+     * @param loadSource 加载源
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> T lazyLoadFromCache(String cacheName, Object elementKey, Callable<T> loadSource) {
         T t = getFromCache(cacheName, elementKey);
@@ -53,18 +59,19 @@ public class AbstractCacheClient implements CacheClient {
         return t;
     }
 
+    /**
+     * @see com.opensoft.common.cache.CacheClient#asynLazyLoadFromCache(String, Object, java.util.concurrent.Callable)
+     * @param cacheName  缓存名
+     * @param elementKey key
+     * @param loadSource 加载源
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> T asynLazyLoadFromCache(String cacheName, Object elementKey, Callable<T> loadSource) {
         T t = getFromCache(cacheName, elementKey);
-        Future<T> future = executorService.submit(loadSource);
-        try {
-            T t1 = future.get();
-            putIntoCache(cacheName, elementKey, t1);
-        } catch (InterruptedException e) {
-            log.error("asyn load InterruptedException", e);
-        } catch (ExecutionException e) {
-            log.error("asyn load ExecutionException", e);
-        }
+
+        new RefreshTask(this, cacheName, elementKey, loadSource).start();
 
         return t;
     }
@@ -86,6 +93,6 @@ public class AbstractCacheClient implements CacheClient {
 
     @Override
     public void stop() {
-        executorService.shutdown();
+
     }
 }

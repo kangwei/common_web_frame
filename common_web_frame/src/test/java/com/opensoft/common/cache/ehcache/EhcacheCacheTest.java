@@ -39,9 +39,9 @@ public class EhcacheCacheTest extends AbstractJUnit4SpringContextTests {
         map.put("age", 11);
         ehCacheClient.putIntoCache("a", "2", "kw");
         ehCacheClient.putIntoCache("a", "1", "wwwwwww");
-        ehCacheClient.putIntoCache("b", "1","kfdfdfdfw");
+        ehCacheClient.putIntoCache("b", "1", "kfdfdfdfw");
         ehCacheClient.putIntoCache("b", "2", "dfjkdjf", 3, 1);
-        Thread.sleep(3400);
+//        Thread.sleep(3400);
         System.out.println(ehCacheClient.getFromCache("b", "2"));
         System.out.println(ehCacheClient.getFromCache("b", "1"));
         ehCacheClient.removeElement("b", "1");
@@ -58,12 +58,38 @@ public class EhcacheCacheTest extends AbstractJUnit4SpringContextTests {
         Object a = ehCacheClient.asynLazyLoadFromCache("a", "1", new Callable<Object>() {
             @Override
             public Object call() throws Exception {
+                Thread.sleep(3000);
                 return "dddddddddd";
             }
         });
         System.out.println("async load----------------------->" + a);
+        Object a1 = ehCacheClient.asynLazyLoadFromCache("a", "2", new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                Thread.sleep(3000);
+                return "eeeeeeeeeeeee";
+            }
+        });
+        ehCacheClient.asynLazyLoadFromCache("a", "2", new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return "fffffffff";
+            }
+        });
+        ehCacheClient.asynLazyLoadFromCache("a", "3", new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return "gggggggggg";
+            }
+        });
+        System.out.println("async load other----------------------->" + a1);
+        Thread.sleep(1001);
         System.out.println(ehCacheClient.getFromCache("a", "1"));
-        ehCacheClient.stop();
+        System.out.println(ehCacheClient.getFromCache("a", "3"));
+        Thread.sleep(3001);
+        System.out.println(ehCacheClient.getFromCache("a", "1"));
+        System.out.println(ehCacheClient.getFromCache("a", "2"));
+//        ehCacheClient.stop();
     }
 
     @After

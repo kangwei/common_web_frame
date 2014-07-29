@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -188,7 +187,7 @@ public class CacheInterceptor {
         }
         StringBuilder sb = new StringBuilder();
         for (Object param : params) {
-            sb.append(String.valueOf(param));
+            sb.append(param);
         }
         return sb.toString();
     }

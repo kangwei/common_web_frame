@@ -179,7 +179,7 @@ public class CollectionUtils extends org.apache.commons.collections.CollectionUt
     }
 
     /**
-     * clone一个集合
+     * clone一个集合,深拷贝
      *
      * @param list 待clone集合
      * @param <T>  泛型

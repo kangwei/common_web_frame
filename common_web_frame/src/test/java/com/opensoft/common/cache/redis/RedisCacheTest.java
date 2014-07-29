@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * Description :
@@ -36,7 +37,7 @@ public class RedisCacheTest extends AbstractJUnit4SpringContextTests {
         map.put("age", 11);
         redisCacheClient.putIntoCache("a", "2", "kw");
         redisCacheClient.putIntoCache("a", "1", "wwwwwww");
-        redisCacheClient.putIntoCache("b", "1","kfdfdfdfw");
+        redisCacheClient.putIntoCache("b", "1", "kfdfdfdfw");
         redisCacheClient.putIntoCache("b", "2", "dfjkdjf", 3, 1);
         Thread.sleep(3400);
         System.out.println(redisCacheClient.getFromCache("b", "2"));
@@ -45,5 +46,21 @@ public class RedisCacheTest extends AbstractJUnit4SpringContextTests {
         System.out.println(redisCacheClient.getFromCache("b", "1"));
         redisCacheClient.removeCache("a");
         System.out.println(redisCacheClient.getFromCache("a", "1"));
+        Object b = redisCacheClient.lazyLoadFromCache("b", "2", new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return "cccccccc";
+            }
+        });
+        System.out.println("lazy load-------------------------->" + b);
+        Object a = redisCacheClient.asynLazyLoadFromCache("a", "1", new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return "dddddddddd";
+            }
+        });
+        System.out.println("async load----------------------->" + a);
+        System.out.println(redisCacheClient.getFromCache("a", "1"));
+        redisCacheClient.stop();
     }
 }

@@ -5,9 +5,15 @@ import com.opensoft.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -76,8 +82,9 @@ public class HttpSender {
         setConfig(config);
     }
 
-    public HttpResponse send(HttpRequest request) throws IOException {
+    public HttpResponse send(HttpRequest request) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         connection = (HttpURLConnection) new URL(url).openConnection();
+        setSSLSupport();
         if ("GET".equals(request.getMethod()) || "DELETE".equals(request.getMethod())) {
             String queryString = buildQueryString(request);
             if (!url.contains("?")) {
@@ -100,6 +107,31 @@ public class HttpSender {
             connection.setUseCaches(request.isUseCache());
         }
         return _send();
+    }
+
+    private void setSSLSupport() throws NoSuchAlgorithmException, KeyManagementException {
+        if (connection instanceof HttpsURLConnection) {
+            TrustManager[] trustManager = {new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }};
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustManager, new SecureRandom());
+            SSLSocketFactory ssf = sslContext.getSocketFactory();
+            ((HttpsURLConnection) connection).setSSLSocketFactory(ssf);
+        }
     }
 
     private HttpResponse _send() throws IOException {
